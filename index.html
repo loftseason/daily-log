@@ -196,6 +196,28 @@
     border-color: var(--accent);
   }
 
+  /* Segmented score buttons */
+  .seg-row { display: flex; gap: 4px; margin-top: 8px; }
+  .seg {
+    flex: 1;
+    padding: 9px 0;
+    font-size: 13px;
+    font-family: var(--mono);
+    background: var(--surface);
+    color: var(--text-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.12s;
+    text-align: center;
+  }
+  .seg:hover { border-color: var(--text-3); }
+  .seg.sel {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
   /* Input rows (sleep / alcohol / caffeine / outdoor) */
   .input-row {
     display: flex;
@@ -509,26 +531,22 @@
       <div class="slider-grid">
         <div class="slider-card">
           <div class="slider-title">Mental energy</div>
-          <div class="slider-val unset" id="val-energy">&ndash;</div>
-          <input type="range" id="sl-energy" min="1" max="10" value="5" step="1" oninput="sv('energy',+this.value,'val-energy')">
+          <div class="seg-row" id="seg-energy"></div>
           <div class="slider-anchors"><span>couldn't start</span><span>two days' work</span></div>
         </div>
         <div class="slider-card">
           <div class="slider-title">Mood valence</div>
-          <div class="slider-val unset" id="val-mood">&ndash;</div>
-          <input type="range" id="sl-mood" min="1" max="10" value="5" step="1" oninput="sv('mood',+this.value,'val-mood')">
+          <div class="seg-row" id="seg-mood"></div>
           <div class="slider-anchors"><span>low, heavy</span><span>bright, light</span></div>
         </div>
         <div class="slider-card">
           <div class="slider-title">Focus quality</div>
-          <div class="slider-val unset" id="val-focus">&ndash;</div>
-          <input type="range" id="sl-focus" min="1" max="10" value="5" step="1" oninput="sv('focus',+this.value,'val-focus')">
+          <div class="seg-row" id="seg-focus"></div>
           <div class="slider-anchors"><span>scattered</span><span>locked in</span></div>
         </div>
         <div class="slider-card">
           <div class="slider-title">Social charge</div>
-          <div class="slider-val unset" id="val-social">&ndash;</div>
-          <input type="range" id="sl-social" min="1" max="10" value="5" step="1" oninput="sv('social',+this.value,'val-social')">
+          <div class="seg-row" id="seg-social"></div>
           <div class="slider-anchors"><span>drained by people</span><span>charged by people</span></div>
         </div>
       </div>
@@ -548,6 +566,19 @@
         <span class="input-row-label">Time outdoors</span>
         <div class="pill-row" id="out-pills"></div>
       </div>
+      <div class="input-row">
+        <span class="input-row-label">Weed</span>
+        <div class="pill-row" id="weed-pills"></div>
+      </div>
+      <div class="input-row">
+        <span class="input-row-label">Nose</span>
+        <div class="pill-row" id="nose-pills"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Exercise</div>
+      <div class="pill-row" id="ex-pills"></div>
     </div>
 
     <div class="section">
@@ -703,16 +734,19 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const LOCATIONS = ['Office','Home','Out','Travel'];
 const MODES = ['Deep work','Reactive','Meetings','Creative','Recovery'];
-const OUTPUTS = ['Photography','Writing','Guitar','Film/video','Reading','Exercise','Coding','Finance work','Social'];
+const OUTPUTS = ['Photography','Writing','Guitar','Film/video','Reading','Meditation','Coding','Finance work','Social'];
 const ALCOHOL = ['None','1\u20132','3+'];
+const WEED = ['None','Yes'];
+const NOSE = ['None','Some','Binge'];
+const EXERCISE = ['None','Weights','Zone 2','Tennis','Stretch','Sauna'];
 const YESNO = ['No','Yes'];
 const OUTDOOR = ['None','Some','Lots'];
 const SLEEP = ['1','2','3','4','5'];
 const TXT = ['signal','friction','decision','tomorrow','note'];
 
 let state = { energy:null, mood:null, focus:null, social:null, sleep:null,
-  alcohol:null, caffeine:null, outdoor:null, advanced:null,
-  location:'', mode:'', outputs:[] };
+  alcohol:'None', weed:'None', nose:'None', caffeine:null, outdoor:null, advanced:null,
+  exercise:[], location:'', mode:'', outputs:[] };
 let todayExists = false;
 let weekState = { rating:null };
 let decState = { confidence:null };
@@ -784,13 +818,25 @@ function restoreDraft() {
   document.getElementById('draft-note').textContent = 'draft restored';
 }
 
-// --- UI: sliders ---
-function sv(key, val, labelId) {
+// --- UI: segmented 1-7 score buttons ---
+function buildSegs(containerId, key) {
+  const el = document.getElementById(containerId);
+  for (let i = 1; i <= 7; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'seg';
+    btn.textContent = i;
+    btn.onclick = () => {
+      state[key] = i;
+      el.querySelectorAll('.seg').forEach(b => b.classList.toggle('sel', +b.textContent === i));
+      saveDraft();
+    };
+    el.appendChild(btn);
+  }
+}
+function setSeg(key, val) {
+  if (val == null) return;
   state[key] = val;
-  const el = document.getElementById(labelId);
-  el.textContent = val;
-  el.classList.remove('unset');
-  saveDraft();
+  document.querySelectorAll('#seg-' + key + ' .seg').forEach(b => b.classList.toggle('sel', +b.textContent === val));
 }
 function wv(val) {
   weekState.rating = val;
@@ -851,24 +897,45 @@ function setCheck(item, on) {
   btn.querySelector('.check-box').textContent = on ? '\u2713' : '';
 }
 
+// --- UI: exercise multiselect ('None' is exclusive) ---
+function buildExercise() {
+  const el = document.getElementById('ex-pills');
+  EXERCISE.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'pill';
+    btn.textContent = item;
+    btn.onclick = () => {
+      if (item === 'None') {
+        state.exercise = ['None'];
+      } else {
+        state.exercise = state.exercise.filter(x => x !== 'None');
+        if (state.exercise.includes(item)) state.exercise = state.exercise.filter(x => x !== item);
+        else state.exercise.push(item);
+      }
+      el.querySelectorAll('.pill').forEach(b => b.classList.toggle('sel', state.exercise.includes(b.textContent)));
+      saveDraft();
+    };
+    el.appendChild(btn);
+  });
+}
+function setExercise(arr) {
+  state.exercise = [...arr];
+  document.querySelectorAll('#ex-pills .pill').forEach(b => b.classList.toggle('sel', arr.includes(b.textContent)));
+}
+
 // --- Populate form from saved state / entry ---
 function applySliders(s) {
-  [['energy','val-energy'],['mood','val-mood'],['focus','val-focus'],['social','val-social']].forEach(([k, labelId]) => {
-    if (s[k] != null) {
-      state[k] = s[k];
-      document.getElementById('sl-' + k).value = s[k];
-      const el = document.getElementById(labelId);
-      el.textContent = s[k];
-      el.classList.remove('unset');
-    }
-  });
+  ['energy','mood','focus','social'].forEach(k => setSeg(k, s[k]));
 }
 function applyPicks(s) {
   if (s.sleep != null)    { state.sleep = s.sleep;       selectPill('sleep-pills', s.sleep); }
   if (s.alcohol)          { state.alcohol = s.alcohol;   selectPill('alc-pills', s.alcohol); }
+  if (s.weed)             { state.weed = s.weed;         selectPill('weed-pills', s.weed); }
+  if (s.nose)             { state.nose = s.nose;         selectPill('nose-pills', s.nose); }
   if (s.caffeine)         { state.caffeine = s.caffeine; selectPill('caf-pills', s.caffeine); }
   if (s.outdoor)          { state.outdoor = s.outdoor;   selectPill('out-pills', s.outdoor); }
   if (s.advanced)         { state.advanced = s.advanced; selectPill('adv-pills', s.advanced); }
+  if (s.exercise && s.exercise.length) setExercise(s.exercise);
   if (s.location)         { state.location = s.location; selectPill('loc-pills', s.location); }
   if (s.mode)             { state.mode = s.mode;         selectPill('mode-pills', s.mode); }
   (s.outputs || []).forEach(o => { if (!state.outputs.includes(o)) state.outputs.push(o); setCheck(o, true); });
@@ -878,9 +945,12 @@ function populateFromEntry(e) {
   applyPicks({
     sleep: e.sleep_quality,
     alcohol: e.alcohol,
+    weed: e.weed == null ? null : (e.weed ? 'Yes' : 'None'),
+    nose: e.nose,
     caffeine: e.caffeine_pm == null ? null : (e.caffeine_pm ? 'Yes' : 'No'),
     outdoor: e.outdoor,
     advanced: e.advanced_project == null ? null : (e.advanced_project ? 'Yes' : 'No'),
+    exercise: e.exercise,
     location: e.location,
     mode: e.mode,
     outputs: e.outputs
@@ -933,9 +1003,12 @@ async function saveEntry() {
     energy: state.energy, mood: state.mood, focus: state.focus, social: state.social,
     sleep_quality: state.sleep,
     alcohol: state.alcohol,
+    weed: state.weed === 'Yes',
+    nose: state.nose,
     caffeine_pm: state.caffeine == null ? null : state.caffeine === 'Yes',
     outdoor: state.outdoor,
     advanced_project: state.advanced == null ? null : state.advanced === 'Yes',
+    exercise: state.exercise.length ? state.exercise : null,
     location: state.location || null,
     mode: state.mode || null,
     outputs: state.outputs.length ? state.outputs : null,
@@ -1152,7 +1225,8 @@ async function saveOutcome(id) {
 
 // --- HISTORY ---
 function sparkSVG(vals) {
-  const w = 120, h = 28, p = 3, min = 1, max = 10;
+  const w = 120, h = 28, p = 3, min = 1;
+  const max = Math.max(7, ...vals);
   if (vals.length < 2) return '<svg width="' + w + '" height="' + h + '"></svg>';
   const pts = vals.map((v, i) => [
     p + i * (w - 2*p) / (vals.length - 1),
@@ -1195,9 +1269,12 @@ async function renderHistory() {
     const inputs = [
       e.sleep_quality != null ? 'sleep ' + e.sleep_quality + '/5' : null,
       e.alcohol && e.alcohol !== 'None' ? 'alcohol ' + e.alcohol : null,
+      e.weed ? 'weed' : null,
+      e.nose && e.nose !== 'None' ? 'nose: ' + e.nose.toLowerCase() : null,
       e.caffeine_pm ? 'pm caffeine' : null,
       e.outdoor && e.outdoor !== 'None' ? 'outdoors: ' + e.outdoor.toLowerCase() : null
     ].filter(Boolean).map(x => '<span class="log-pill">' + esc(x) + '</span>').join('');
+    const ex = (e.exercise || []).filter(x => x !== 'None').map(x => '<span class="log-pill output">' + esc(x) + '</span>').join('');
     const adv = e.advanced_project ? '<span class="log-pill flag">advanced a key project</span>' : '';
     const fields = ['signal','friction','decision','tomorrow','consumption','note'].map(k =>
       e[k] ? '<div class="log-field-label">' + k + '</div><div class="log-field-val">' + esc(e[k]) + '</div>' : ''
@@ -1212,7 +1289,7 @@ async function renderHistory() {
           <div class="log-score"><span class="log-score-label">social</span><span class="log-score-val">${e.social ?? '\u2013'}</span></div>
         </div>
         ${ctx ? '<div class="log-pills">' + ctx + '</div>' : ''}
-        ${inputs || adv ? '<div class="log-pills">' + inputs + adv + '</div>' : ''}
+        ${inputs || adv || ex ? '<div class="log-pills">' + inputs + ex + adv + '</div>' : ''}
         ${outputs ? '<div class="log-pills">' + outputs + '</div>' : ''}
         ${fields}
       </div>`;
@@ -1268,13 +1345,24 @@ async function init() {
       saveDraft();
     };
   });
+  buildSegs('seg-energy', 'energy');
+  buildSegs('seg-mood', 'mood');
+  buildSegs('seg-focus', 'focus');
+  buildSegs('seg-social', 'social');
   buildPills('alc-pills', ALCOHOL, 'alcohol');
+  buildPills('weed-pills', WEED, 'weed');
+  buildPills('nose-pills', NOSE, 'nose');
   buildPills('caf-pills', YESNO, 'caffeine');
   buildPills('out-pills', OUTDOOR, 'outdoor');
   buildPills('adv-pills', YESNO, 'advanced');
+  buildExercise();
   buildPills('loc-pills', LOCATIONS, 'location');
   buildPills('mode-pills', MODES, 'mode');
   buildChecks();
+  // Substance rows default to 'None' so a clean day costs zero taps
+  selectPill('alc-pills', 'None');
+  selectPill('weed-pills', 'None');
+  selectPill('nose-pills', 'None');
   TXT.forEach(k => document.getElementById('txt-' + k).addEventListener('input', saveDraft));
 
   checkConnection();
