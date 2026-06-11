@@ -51,7 +51,7 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 36px;
+    margin-bottom: 28px;
   }
   .header-left h1 {
     font-family: var(--mono);
@@ -77,6 +77,25 @@
   .status-dot.connected { background: var(--green); }
   .status-dot.error { background: var(--red); }
 
+  /* Carried-over intention banner */
+  .banner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 24px;
+  }
+  .banner-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 4px;
+  }
+  .banner-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+
   /* Tabs */
   .tabs {
     display: flex;
@@ -88,8 +107,8 @@
   }
   .tab {
     flex: 1;
-    padding: 7px 10px;
-    font-size: 13px;
+    padding: 7px 4px;
+    font-size: 12px;
     font-family: var(--sans);
     font-weight: 400;
     color: var(--text-2);
@@ -102,20 +121,24 @@
   .tab.active {
     background: var(--surface);
     color: var(--text);
-    font-weight: 500;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   }
 
   /* Sections */
-  .section { margin-bottom: 28px; }
+  .section { margin-bottom: 26px; }
   .section-label {
     font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
+    font-size: 11px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-3);
     margin-bottom: 10px;
-    font-weight: 400;
+  }
+  .section-hint {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: -6px;
+    margin-bottom: 10px;
   }
 
   /* Sliders */
@@ -124,159 +147,190 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
+  @media (max-width: 480px) { .slider-grid { grid-template-columns: 1fr; } }
   .slider-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px 14px 12px;
   }
-  .slider-title {
-    font-size: 11px;
-    color: var(--text-3);
-    margin-bottom: 6px;
-    font-weight: 400;
-    letter-spacing: 0.02em;
-  }
+  .slider-title { font-size: 13px; color: var(--text-2); margin-bottom: 2px; }
   .slider-val {
     font-family: var(--mono);
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 300;
-    color: var(--text);
-    margin-bottom: 8px;
-    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .slider-val.unset { color: var(--text-3); }
+  .slider-anchors {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--text-3);
+    margin-top: 5px;
+    letter-spacing: 0.02em;
   }
   input[type="range"] {
-    -webkit-appearance: none;
     width: 100%;
-    height: 2px;
-    background: var(--border-mid);
-    border-radius: 2px;
-    outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--text);
+    accent-color: var(--accent);
     cursor: pointer;
-    transition: transform 0.1s;
   }
-  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
   /* Pills */
   .pill-row { display: flex; gap: 6px; flex-wrap: wrap; }
   .pill {
-    padding: 5px 13px;
-    font-size: 12px;
-    border: 1px solid var(--border-mid);
-    border-radius: 20px;
-    cursor: pointer;
-    background: transparent;
-    color: var(--text-2);
+    padding: 7px 14px;
+    font-size: 13px;
     font-family: var(--sans);
+    background: var(--surface);
+    color: var(--text-2);
+    border: 1px solid var(--border-mid);
+    border-radius: 18px;
+    cursor: pointer;
     transition: all 0.12s;
-    white-space: nowrap;
   }
-  .pill:hover { border-color: var(--text-3); color: var(--text); }
+  .pill:hover { border-color: var(--text-3); }
   .pill.sel {
-    background: var(--text);
-    color: var(--bg);
-    border-color: var(--text);
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
   }
 
-  /* Checkboxes */
+  /* Input rows (sleep / alcohol / caffeine / outdoor) */
+  .input-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .input-row:last-child { border-bottom: none; }
+  .input-row-label { font-size: 13px; color: var(--text-2); flex-shrink: 0; }
+  .input-row .pill { padding: 5px 11px; font-size: 12px; }
+
+  /* Checks */
   .check-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
   }
+  @media (max-width: 480px) { .check-grid { grid-template-columns: 1fr 1fr; } }
   .check-item {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 9px 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    background: var(--surface);
-    color: var(--text-2);
+    gap: 8px;
+    padding: 9px 11px;
     font-size: 13px;
     font-family: var(--sans);
+    background: var(--surface);
+    color: var(--text-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
     transition: all 0.12s;
     text-align: left;
   }
-  .check-item:hover { border-color: var(--border-mid); color: var(--text); }
+  .check-item:hover { border-color: var(--text-3); }
   .check-item.checked {
-    background: var(--text);
-    color: var(--bg);
-    border-color: var(--text);
+    background: var(--accent-light);
+    color: var(--text);
+    border-color: var(--text-2);
   }
   .check-box {
-    width: 14px; height: 14px;
-    border: 1.5px solid currentColor;
-    border-radius: 3px;
-    flex-shrink: 0;
-    display: flex;
+    width: 15px; height: 15px;
+    border: 1px solid var(--border-mid);
+    border-radius: 4px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 10px;
+    flex-shrink: 0;
+    background: var(--surface);
   }
 
   /* Textareas */
   textarea {
     width: 100%;
-    padding: 12px 14px;
+    padding: 11px 13px;
     font-size: 14px;
     font-family: var(--sans);
-    line-height: 1.6;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    font-weight: 300;
     color: var(--text);
-    resize: none;
-    outline: none;
-    transition: border-color 0.15s;
+    background: var(--surface);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    resize: vertical;
+    line-height: 1.5;
   }
-  textarea:focus { border-color: var(--border-mid); }
-  textarea::placeholder { color: var(--text-3); font-weight: 300; }
+  textarea:focus { outline: none; border-color: var(--text-2); }
+  textarea::placeholder { color: var(--text-3); }
 
   /* Save */
   .save-row {
     display: flex;
     align-items: center;
     gap: 14px;
-    margin-top: 32px;
+    margin-top: 30px;
   }
   .btn-primary {
-    padding: 11px 28px;
+    padding: 11px 26px;
     font-size: 14px;
     font-family: var(--sans);
-    font-weight: 500;
-    background: var(--text);
-    color: var(--bg);
+    font-weight: 400;
+    background: var(--accent);
+    color: #fff;
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-    letter-spacing: 0.01em;
+    transition: opacity 0.12s;
   }
   .btn-primary:hover { opacity: 0.85; }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .save-msg {
-    font-size: 12px;
-    color: var(--text-3);
-    font-family: var(--mono);
-  }
+  .btn-primary:disabled { opacity: 0.5; cursor: default; }
+  .save-msg { font-family: var(--mono); font-size: 12px; color: var(--text-3); }
   .save-msg.ok { color: var(--green); }
   .save-msg.err { color: var(--red); }
+  .draft-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    margin-top: 10px;
+  }
+
+  /* Stats strip (history) */
+  .stats-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .stats-week {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    margin-bottom: 14px;
+  }
+  .spark-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 18px;
+  }
+  .spark-cell { display: flex; flex-direction: column; gap: 3px; }
+  .spark-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .spark-label { font-size: 11px; color: var(--text-3); }
+  .spark-last { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
   /* History */
   .log-entry {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 18px;
+    padding: 16px;
     margin-bottom: 10px;
   }
   .log-date {
@@ -291,6 +345,7 @@
     display: flex;
     gap: 16px;
     margin-bottom: 10px;
+    flex-wrap: wrap;
   }
   .log-score {
     display: flex;
@@ -308,6 +363,7 @@
     color: var(--text-2);
   }
   .log-pill.output { background: var(--accent-light); }
+  .log-pill.flag { background: var(--green-bg); color: var(--green); }
   .log-field-label {
     font-family: var(--mono);
     font-size: 10px;
@@ -318,6 +374,46 @@
     margin-bottom: 3px;
   }
   .log-field-val { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+
+  /* Decisions */
+  .decision-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .decision-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .confidence-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-2);
+  }
+  .outcome-block {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-tiny {
+    padding: 5px 12px;
+    font-size: 12px;
+    font-family: var(--sans);
+    background: var(--surface);
+    color: var(--text-2);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .btn-tiny:hover { background: var(--surface2); }
+  .outcome-form { margin-top: 10px; display: none; }
+  .outcome-form.open { display: block; }
+  .outcome-form textarea { margin-bottom: 8px; }
 
   /* Export */
   .btn-secondary {
@@ -357,20 +453,21 @@
   }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 
-  .empty-state {
+  .empty-state, .loading-state {
     font-family: var(--mono);
     font-size: 12px;
     color: var(--text-3);
     padding: 32px 0;
     letter-spacing: 0.04em;
   }
+  .loading-state { padding: 20px 0; }
 
-  .loading-state {
+  .week-header {
     font-family: var(--mono);
     font-size: 12px;
-    color: var(--text-3);
-    padding: 20px 0;
+    color: var(--text-2);
     letter-spacing: 0.04em;
+    margin-bottom: 18px;
   }
 </style>
 </head>
@@ -385,8 +482,15 @@
     <div class="status-dot" id="status-dot" title="Connection status"></div>
   </div>
 
+  <div class="banner" id="banner" style="display:none;">
+    <div class="banner-label" id="banner-label">Today's one thing</div>
+    <div class="banner-text" id="banner-text"></div>
+  </div>
+
   <div class="tabs">
-    <button class="tab active" onclick="showTab('log')">Log today</button>
+    <button class="tab active" onclick="showTab('log')">Log</button>
+    <button class="tab" onclick="showTab('week')">Week</button>
+    <button class="tab" onclick="showTab('decide')">Decide</button>
     <button class="tab" onclick="showTab('history')">History</button>
     <button class="tab" onclick="showTab('export')">Export</button>
   </div>
@@ -395,28 +499,54 @@
   <div id="tab-log">
 
     <div class="section">
+      <div class="section-label">Last night's sleep</div>
+      <div class="section-hint">1 wrecked &middot; 5 fully restored</div>
+      <div class="pill-row" id="sleep-pills"></div>
+    </div>
+
+    <div class="section">
       <div class="section-label">State</div>
       <div class="slider-grid">
         <div class="slider-card">
           <div class="slider-title">Mental energy</div>
-          <div class="slider-val" id="val-energy">5</div>
-          <input type="range" min="1" max="10" value="5" step="1" oninput="sv('energy',+this.value,'val-energy')">
+          <div class="slider-val unset" id="val-energy">&ndash;</div>
+          <input type="range" id="sl-energy" min="1" max="10" value="5" step="1" oninput="sv('energy',+this.value,'val-energy')">
+          <div class="slider-anchors"><span>couldn't start</span><span>two days' work</span></div>
         </div>
         <div class="slider-card">
           <div class="slider-title">Mood valence</div>
-          <div class="slider-val" id="val-mood">5</div>
-          <input type="range" min="1" max="10" value="5" step="1" oninput="sv('mood',+this.value,'val-mood')">
+          <div class="slider-val unset" id="val-mood">&ndash;</div>
+          <input type="range" id="sl-mood" min="1" max="10" value="5" step="1" oninput="sv('mood',+this.value,'val-mood')">
+          <div class="slider-anchors"><span>low, heavy</span><span>bright, light</span></div>
         </div>
         <div class="slider-card">
           <div class="slider-title">Focus quality</div>
-          <div class="slider-val" id="val-focus">5</div>
-          <input type="range" min="1" max="10" value="5" step="1" oninput="sv('focus',+this.value,'val-focus')">
+          <div class="slider-val unset" id="val-focus">&ndash;</div>
+          <input type="range" id="sl-focus" min="1" max="10" value="5" step="1" oninput="sv('focus',+this.value,'val-focus')">
+          <div class="slider-anchors"><span>scattered</span><span>locked in</span></div>
         </div>
         <div class="slider-card">
           <div class="slider-title">Social charge</div>
-          <div class="slider-val" id="val-social">5</div>
-          <input type="range" min="1" max="10" value="5" step="1" oninput="sv('social',+this.value,'val-social')">
+          <div class="slider-val unset" id="val-social">&ndash;</div>
+          <input type="range" id="sl-social" min="1" max="10" value="5" step="1" oninput="sv('social',+this.value,'val-social')">
+          <div class="slider-anchors"><span>drained by people</span><span>charged by people</span></div>
         </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Inputs</div>
+      <div class="input-row">
+        <span class="input-row-label">Alcohol</span>
+        <div class="pill-row" id="alc-pills"></div>
+      </div>
+      <div class="input-row">
+        <span class="input-row-label">Caffeine after noon</span>
+        <div class="pill-row" id="caf-pills"></div>
+      </div>
+      <div class="input-row">
+        <span class="input-row-label">Time outdoors</span>
+        <div class="pill-row" id="out-pills"></div>
       </div>
     </div>
 
@@ -436,6 +566,14 @@
     </div>
 
     <div class="section">
+      <div class="section-label">Momentum</div>
+      <div class="input-row" style="border-bottom:none;">
+        <span class="input-row-label">Moved a key project forward</span>
+        <div class="pill-row" id="adv-pills"></div>
+      </div>
+    </div>
+
+    <div class="section">
       <div class="section-label">Signal</div>
       <textarea id="txt-signal" rows="2" placeholder="One thing that felt like forward motion"></textarea>
     </div>
@@ -451,8 +589,8 @@
     </div>
 
     <div class="section">
-      <div class="section-label">Consumption</div>
-      <textarea id="txt-consumption" rows="2" placeholder="What did you read, watch, or listen to?"></textarea>
+      <div class="section-label">Tomorrow's one thing</div>
+      <textarea id="txt-tomorrow" rows="2" placeholder="The single thing tomorrow goes well if you do"></textarea>
     </div>
 
     <div class="section">
@@ -464,19 +602,94 @@
       <button class="btn-primary" id="save-btn" onclick="saveEntry()">Save entry</button>
       <span class="save-msg" id="save-msg"></span>
     </div>
+    <div class="draft-note" id="draft-note"></div>
 
+  </div>
+
+  <!-- WEEK TAB -->
+  <div id="tab-week" style="display:none;">
+    <div class="week-header" id="week-header"></div>
+
+    <div class="section">
+      <div class="section-label">Week rating</div>
+      <div class="slider-card" style="max-width:260px;">
+        <div class="slider-val unset" id="val-week">&ndash;</div>
+        <input type="range" id="sl-week" min="1" max="10" value="5" step="1" oninput="wv(+this.value)">
+        <div class="slider-anchors"><span>lost week</span><span>landmark week</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Biggest win</div>
+      <textarea id="txt-win" rows="2" placeholder="What actually moved this week?"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-label">What to change</div>
+      <textarea id="txt-change" rows="2" placeholder="One adjustment for next week"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Pipeline</div>
+      <textarea id="txt-pipeline" rows="2" placeholder="Exit plan, clients, leads &mdash; where do things stand?"></textarea>
+    </div>
+
+    <div class="save-row">
+      <button class="btn-primary" id="week-btn" onclick="saveWeek()">Save week</button>
+      <span class="save-msg" id="week-msg"></span>
+    </div>
+
+    <div class="section" style="margin-top:36px;">
+      <div class="section-label">Past weeks</div>
+      <div id="week-list"><div class="loading-state">loading...</div></div>
+    </div>
+  </div>
+
+  <!-- DECIDE TAB -->
+  <div id="tab-decide" style="display:none;">
+    <p class="export-intro">A ledger for significant decisions. Log the call, your expected outcome, and your confidence &mdash; then record what actually happened. Review quarterly to calibrate your judgment.</p>
+
+    <div class="section">
+      <div class="section-label">The decision</div>
+      <textarea id="txt-dec" rows="2" placeholder="What did you decide?"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Expected outcome</div>
+      <textarea id="txt-exp" rows="2" placeholder="What do you expect to happen, and by when?"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Confidence</div>
+      <div class="slider-card" style="max-width:260px;">
+        <div class="slider-val unset" id="val-conf">&ndash;</div>
+        <input type="range" id="sl-conf" min="50" max="95" value="70" step="5" oninput="cv(+this.value)">
+        <div class="slider-anchors"><span>coin flip</span><span>near certain</span></div>
+      </div>
+    </div>
+
+    <div class="save-row">
+      <button class="btn-primary" onclick="saveDecision()">Log decision</button>
+      <span class="save-msg" id="dec-msg"></span>
+    </div>
+
+    <div class="section" style="margin-top:36px;">
+      <div class="section-label">Ledger</div>
+      <div id="dec-list"><div class="loading-state">loading...</div></div>
+    </div>
   </div>
 
   <!-- HISTORY TAB -->
   <div id="tab-history" style="display:none;">
+    <div id="history-stats"></div>
     <div id="history-list"><div class="loading-state">loading...</div></div>
   </div>
 
   <!-- EXPORT TAB -->
   <div id="tab-export" style="display:none;">
-    <p class="export-intro">All your entries as JSON — paste into a Claude conversation and ask it to find patterns across energy, mood, output, and friction.</p>
+    <p class="export-intro">Everything &mdash; daily entries, weekly reviews, and the decision ledger &mdash; as one JSON object. Paste into a Claude conversation and ask it to find patterns: sleep vs. energy, mode vs. focus, friction themes, decision calibration.</p>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="downloadJSON()">↓ Download JSON</button>
+      <button class="btn-secondary" onclick="downloadJSON()">&darr; Download JSON</button>
       <button class="btn-secondary" onclick="copyJSON()" id="copy-btn">Copy to clipboard</button>
     </div>
     <div class="export-pre" id="export-pre">loading...</div>
@@ -491,12 +704,34 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const LOCATIONS = ['Office','Home','Out','Travel'];
 const MODES = ['Deep work','Reactive','Meetings','Creative','Recovery'];
 const OUTPUTS = ['Photography','Writing','Guitar','Film/video','Reading','Exercise','Coding','Finance work','Social'];
+const ALCOHOL = ['None','1\u20132','3+'];
+const YESNO = ['No','Yes'];
+const OUTDOOR = ['None','Some','Lots'];
+const SLEEP = ['1','2','3','4','5'];
+const TXT = ['signal','friction','decision','tomorrow','note'];
 
-let state = { energy:5, mood:5, focus:5, social:5, location:'', mode:'', outputs:[], friction:'', signal:'', decision:'', consumption:'', note:'' };
-let allEntries = [];
+let state = { energy:null, mood:null, focus:null, social:null, sleep:null,
+  alcohol:null, caffeine:null, outdoor:null, advanced:null,
+  location:'', mode:'', outputs:[] };
+let todayExists = false;
+let weekState = { rating:null };
+let decState = { confidence:null };
+
+// --- DATES (local, not UTC) ---
+function localDate(d = new Date()) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function mondayOf(d = new Date()) {
+  const x = new Date(d);
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return localDate(x);
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 // --- SUPABASE ---
-async function dbFetch(path, opts={}) {
+async function dbFetch(path, opts = {}) {
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
     headers: {
       'apikey': SUPABASE_KEY,
@@ -519,20 +754,58 @@ async function checkConnection() {
   }
 }
 
-async function loadEntries() {
+async function loadTable(name) {
   try {
-    const res = await dbFetch('entries?select=*&order=created_at.desc');
-    if (res.ok) { allEntries = await res.json(); return allEntries; }
+    const res = await dbFetch(name);
+    if (res.ok) return await res.json();
     return [];
   } catch(e) { return []; }
 }
 
-// --- INIT UI ---
-function sv(key, val, labelId) {
-  state[key] = val;
-  document.getElementById(labelId).textContent = val;
+// --- DRAFT (localStorage) ---
+function draftKey() { return 'dl-draft-' + localDate(); }
+function saveDraft() {
+  const d = { state, texts: {} };
+  TXT.forEach(k => d.texts[k] = document.getElementById('txt-' + k).value);
+  try { localStorage.setItem(draftKey(), JSON.stringify(d)); } catch(e) {}
+  document.getElementById('draft-note').textContent = 'draft saved locally';
+}
+function clearDraft() {
+  try { localStorage.removeItem(draftKey()); } catch(e) {}
+  document.getElementById('draft-note').textContent = '';
+}
+function restoreDraft() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(draftKey())); } catch(e) {}
+  if (!d) return;
+  applySliders(d.state);
+  applyPicks(d.state);
+  TXT.forEach(k => { if (d.texts && d.texts[k]) document.getElementById('txt-' + k).value = d.texts[k]; });
+  document.getElementById('draft-note').textContent = 'draft restored';
 }
 
+// --- UI: sliders ---
+function sv(key, val, labelId) {
+  state[key] = val;
+  const el = document.getElementById(labelId);
+  el.textContent = val;
+  el.classList.remove('unset');
+  saveDraft();
+}
+function wv(val) {
+  weekState.rating = val;
+  const el = document.getElementById('val-week');
+  el.textContent = val;
+  el.classList.remove('unset');
+}
+function cv(val) {
+  decState.confidence = val;
+  const el = document.getElementById('val-conf');
+  el.textContent = val + '%';
+  el.classList.remove('unset');
+}
+
+// --- UI: pills & checks ---
 function buildPills(containerId, items, stateKey) {
   const el = document.getElementById(containerId);
   items.forEach(item => {
@@ -543,28 +816,82 @@ function buildPills(containerId, items, stateKey) {
       el.querySelectorAll('.pill').forEach(b => b.classList.remove('sel'));
       btn.classList.add('sel');
       state[stateKey] = item;
+      saveDraft();
     };
     el.appendChild(btn);
   });
 }
-
+function selectPill(containerId, label) {
+  if (label == null) return;
+  document.querySelectorAll('#' + containerId + ' .pill').forEach(b => {
+    b.classList.toggle('sel', b.textContent === String(label));
+  });
+}
 function buildChecks() {
   const grid = document.getElementById('output-checks');
   OUTPUTS.forEach(item => {
     const btn = document.createElement('button');
     btn.className = 'check-item';
-    btn.innerHTML = `<span class="check-box"></span><span>${item}</span>`;
+    btn.dataset.item = item;
+    btn.innerHTML = '<span class="check-box"></span><span>' + esc(item) + '</span>';
     btn.onclick = () => {
       const on = btn.classList.toggle('checked');
-      btn.querySelector('.check-box').textContent = on ? '✓' : '';
+      btn.querySelector('.check-box').textContent = on ? '\u2713' : '';
       if (on) { if (!state.outputs.includes(item)) state.outputs.push(item); }
       else { state.outputs = state.outputs.filter(x => x !== item); }
+      saveDraft();
     };
     grid.appendChild(btn);
   });
 }
+function setCheck(item, on) {
+  const btn = document.querySelector('.check-item[data-item="' + CSS.escape(item) + '"]');
+  if (!btn) return;
+  btn.classList.toggle('checked', on);
+  btn.querySelector('.check-box').textContent = on ? '\u2713' : '';
+}
 
-// --- DATE ---
+// --- Populate form from saved state / entry ---
+function applySliders(s) {
+  [['energy','val-energy'],['mood','val-mood'],['focus','val-focus'],['social','val-social']].forEach(([k, labelId]) => {
+    if (s[k] != null) {
+      state[k] = s[k];
+      document.getElementById('sl-' + k).value = s[k];
+      const el = document.getElementById(labelId);
+      el.textContent = s[k];
+      el.classList.remove('unset');
+    }
+  });
+}
+function applyPicks(s) {
+  if (s.sleep != null)    { state.sleep = s.sleep;       selectPill('sleep-pills', s.sleep); }
+  if (s.alcohol)          { state.alcohol = s.alcohol;   selectPill('alc-pills', s.alcohol); }
+  if (s.caffeine)         { state.caffeine = s.caffeine; selectPill('caf-pills', s.caffeine); }
+  if (s.outdoor)          { state.outdoor = s.outdoor;   selectPill('out-pills', s.outdoor); }
+  if (s.advanced)         { state.advanced = s.advanced; selectPill('adv-pills', s.advanced); }
+  if (s.location)         { state.location = s.location; selectPill('loc-pills', s.location); }
+  if (s.mode)             { state.mode = s.mode;         selectPill('mode-pills', s.mode); }
+  (s.outputs || []).forEach(o => { if (!state.outputs.includes(o)) state.outputs.push(o); setCheck(o, true); });
+}
+function populateFromEntry(e) {
+  applySliders(e);
+  applyPicks({
+    sleep: e.sleep_quality,
+    alcohol: e.alcohol,
+    caffeine: e.caffeine_pm == null ? null : (e.caffeine_pm ? 'Yes' : 'No'),
+    outdoor: e.outdoor,
+    advanced: e.advanced_project == null ? null : (e.advanced_project ? 'Yes' : 'No'),
+    location: e.location,
+    mode: e.mode,
+    outputs: e.outputs
+  });
+  TXT.forEach(k => {
+    const col = k === 'decision' ? 'decision' : k;
+    if (e[col]) document.getElementById('txt-' + k).value = e[col];
+  });
+}
+
+// --- DATE HEADER ---
 function setDate() {
   const d = new Date();
   const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -573,52 +900,79 @@ function setDate() {
 }
 
 // --- TABS ---
+const TABS = ['log','week','decide','history','export'];
 function showTab(t) {
-  ['log','history','export'].forEach(id => {
-    document.getElementById('tab-'+id).style.display = id===t ? '' : 'none';
-  });
-  document.querySelectorAll('.tab').forEach((el,i) => {
-    el.classList.toggle('active', ['log','history','export'][i]===t);
-  });
-  if (t==='history') renderHistory();
-  if (t==='export') renderExport();
+  TABS.forEach(id => document.getElementById('tab-' + id).style.display = id === t ? '' : 'none');
+  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', TABS[i] === t));
+  if (t === 'week') initWeekTab();
+  if (t === 'decide') renderDecisions();
+  if (t === 'history') renderHistory();
+  if (t === 'export') renderExport();
 }
 
-// --- SAVE ---
+// --- SAVE DAILY (upsert by date) ---
 async function saveEntry() {
   const btn = document.getElementById('save-btn');
   const msg = document.getElementById('save-msg');
-  btn.disabled = true;
   msg.className = 'save-msg';
+
+  const required = [['sleep','sleep'],['energy','energy'],['mood','mood'],['focus','focus'],['social','social']];
+  const missing = required.filter(([k]) => state[k] == null).map(([,n]) => n);
+  if (missing.length) {
+    msg.className = 'save-msg err';
+    msg.textContent = 'rate: ' + missing.join(', ');
+    return;
+  }
+
+  btn.disabled = true;
   msg.textContent = 'saving...';
 
+  const today = localDate();
   const entry = {
-    date: new Date().toISOString().split('T')[0],
-    energy: state.energy,
-    mood: state.mood,
-    focus: state.focus,
-    social: state.social,
+    date: today,
+    energy: state.energy, mood: state.mood, focus: state.focus, social: state.social,
+    sleep_quality: state.sleep,
+    alcohol: state.alcohol,
+    caffeine_pm: state.caffeine == null ? null : state.caffeine === 'Yes',
+    outdoor: state.outdoor,
+    advanced_project: state.advanced == null ? null : state.advanced === 'Yes',
     location: state.location || null,
     mode: state.mode || null,
     outputs: state.outputs.length ? state.outputs : null,
-    friction: document.getElementById('txt-friction').value || null,
     signal: document.getElementById('txt-signal').value || null,
+    friction: document.getElementById('txt-friction').value || null,
     decision: document.getElementById('txt-decision').value || null,
-    consumption: document.getElementById('txt-consumption').value || null,
+    tomorrow: document.getElementById('txt-tomorrow').value || null,
     note: document.getElementById('txt-note').value || null
   };
 
   try {
-    const res = await dbFetch('entries', {
-      method: 'POST',
-      prefer: 'return=minimal',
-      body: JSON.stringify(entry)
-    });
-    if (res.ok || res.status === 201) {
+    let res;
+    if (todayExists) {
+      res = await dbFetch('entries?date=eq.' + today, {
+        method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(entry)
+      });
+    } else {
+      const check = await dbFetch('entries?date=eq.' + today + '&select=id');
+      const rows = check.ok ? await check.json() : [];
+      if (rows.length) {
+        todayExists = true;
+        res = await dbFetch('entries?date=eq.' + today, {
+          method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(entry)
+        });
+      } else {
+        res = await dbFetch('entries', {
+          method: 'POST', prefer: 'return=minimal', body: JSON.stringify(entry)
+        });
+      }
+    }
+    if (res.ok || res.status === 201 || res.status === 204) {
+      todayExists = true;
+      btn.textContent = 'Update entry';
       msg.className = 'save-msg ok';
-      msg.textContent = 'saved ✓';
-      resetForm();
-      setTimeout(() => msg.textContent = '', 3000);
+      msg.textContent = todayExists ? 'saved \u2713 (you can edit and re-save)' : 'saved \u2713';
+      clearDraft();
+      setTimeout(() => msg.textContent = '', 4000);
     } else {
       const err = await res.text();
       msg.className = 'save-msg err';
@@ -627,92 +981,339 @@ async function saveEntry() {
     }
   } catch(e) {
     msg.className = 'save-msg err';
-    msg.textContent = 'network error';
+    msg.textContent = 'network error \u2014 draft kept locally';
   }
   btn.disabled = false;
 }
 
-function resetForm() {
-  ['energy','mood','focus','social'].forEach(k => {
-    state[k] = 5;
-    document.getElementById('val-'+k).textContent = '5';
-  });
-  document.querySelectorAll('input[type="range"]').forEach(r => r.value = 5);
-  ['friction','signal','decision','consumption','note'].forEach(k => {
-    document.getElementById('txt-'+k).value = '';
-  });
-  document.querySelectorAll('.pill').forEach(b => b.classList.remove('sel'));
-  document.querySelectorAll('.check-item').forEach(b => {
-    b.classList.remove('checked');
-    b.querySelector('.check-box').textContent = '';
-  });
-  state.location = ''; state.mode = ''; state.outputs = [];
+// --- WEEK ---
+let weekExists = false;
+let weekLoaded = false;
+async function initWeekTab() {
+  document.getElementById('week-header').textContent = 'week of ' + mondayOf();
+  renderWeekList();
+  if (weekLoaded) return;
+  weekLoaded = true;
+  try {
+    const res = await dbFetch('weekly?week_of=eq.' + mondayOf());
+    if (res.ok) {
+      const rows = await res.json();
+      if (rows.length) {
+        const w = rows[0];
+        weekExists = true;
+        document.getElementById('week-btn').textContent = 'Update week';
+        if (w.rating != null) {
+          weekState.rating = w.rating;
+          document.getElementById('sl-week').value = w.rating;
+          wv(w.rating);
+        }
+        if (w.win) document.getElementById('txt-win').value = w.win;
+        if (w.change) document.getElementById('txt-change').value = w.change;
+        if (w.pipeline) document.getElementById('txt-pipeline').value = w.pipeline;
+      }
+    }
+  } catch(e) {}
+}
+
+async function saveWeek() {
+  const msg = document.getElementById('week-msg');
+  msg.className = 'save-msg';
+  if (weekState.rating == null) {
+    msg.className = 'save-msg err';
+    msg.textContent = 'rate the week first';
+    return;
+  }
+  msg.textContent = 'saving...';
+  const row = {
+    week_of: mondayOf(),
+    rating: weekState.rating,
+    win: document.getElementById('txt-win').value || null,
+    change: document.getElementById('txt-change').value || null,
+    pipeline: document.getElementById('txt-pipeline').value || null
+  };
+  try {
+    let res;
+    if (weekExists) {
+      res = await dbFetch('weekly?week_of=eq.' + row.week_of, {
+        method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify(row)
+      });
+    } else {
+      res = await dbFetch('weekly', { method: 'POST', prefer: 'return=minimal', body: JSON.stringify(row) });
+    }
+    if (res.ok || res.status === 201 || res.status === 204) {
+      weekExists = true;
+      document.getElementById('week-btn').textContent = 'Update week';
+      msg.className = 'save-msg ok';
+      msg.textContent = 'saved \u2713';
+      renderWeekList();
+      setTimeout(() => msg.textContent = '', 3000);
+    } else {
+      msg.className = 'save-msg err';
+      msg.textContent = 'error: ' + res.status + ' \u2014 has the weekly table been created?';
+    }
+  } catch(e) {
+    msg.className = 'save-msg err';
+    msg.textContent = 'network error';
+  }
+}
+
+async function renderWeekList() {
+  const el = document.getElementById('week-list');
+  const weeks = await loadTable('weekly?order=week_of.desc&limit=12');
+  if (!weeks.length) { el.innerHTML = '<div class="empty-state">no weekly reviews yet</div>'; return; }
+  el.innerHTML = weeks.map(w => `
+    <div class="log-entry">
+      <div class="log-date">week of ${esc(w.week_of)}</div>
+      <div class="log-scores"><div class="log-score"><span class="log-score-label">rating</span><span class="log-score-val">${w.rating ?? '\u2013'}</span></div></div>
+      ${w.win ? '<div class="log-field-label">win</div><div class="log-field-val">' + esc(w.win) + '</div>' : ''}
+      ${w.change ? '<div class="log-field-label">change</div><div class="log-field-val">' + esc(w.change) + '</div>' : ''}
+      ${w.pipeline ? '<div class="log-field-label">pipeline</div><div class="log-field-val">' + esc(w.pipeline) + '</div>' : ''}
+    </div>`).join('');
+}
+
+// --- DECISIONS ---
+async function saveDecision() {
+  const msg = document.getElementById('dec-msg');
+  msg.className = 'save-msg';
+  const decision = document.getElementById('txt-dec').value.trim();
+  if (!decision) { msg.className = 'save-msg err'; msg.textContent = 'write the decision first'; return; }
+  if (decState.confidence == null) { msg.className = 'save-msg err'; msg.textContent = 'set your confidence'; return; }
+  msg.textContent = 'saving...';
+  const row = {
+    decision,
+    expectation: document.getElementById('txt-exp').value || null,
+    confidence: decState.confidence
+  };
+  try {
+    const res = await dbFetch('decisions', { method: 'POST', prefer: 'return=minimal', body: JSON.stringify(row) });
+    if (res.ok || res.status === 201) {
+      msg.className = 'save-msg ok';
+      msg.textContent = 'logged \u2713';
+      document.getElementById('txt-dec').value = '';
+      document.getElementById('txt-exp').value = '';
+      decState.confidence = null;
+      document.getElementById('sl-conf').value = 70;
+      const cl = document.getElementById('val-conf');
+      cl.textContent = '\u2013'; cl.classList.add('unset');
+      renderDecisions();
+      setTimeout(() => msg.textContent = '', 3000);
+    } else {
+      msg.className = 'save-msg err';
+      msg.textContent = 'error: ' + res.status + ' \u2014 has the decisions table been created?';
+    }
+  } catch(e) {
+    msg.className = 'save-msg err';
+    msg.textContent = 'network error';
+  }
+}
+
+async function renderDecisions() {
+  const el = document.getElementById('dec-list');
+  el.innerHTML = '<div class="loading-state">loading...</div>';
+  const rows = await loadTable('decisions?order=created_at.desc');
+  if (!rows.length) { el.innerHTML = '<div class="empty-state">no decisions logged yet</div>'; return; }
+  el.innerHTML = rows.map(d => {
+    const dateStr = new Date(d.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+    return `
+    <div class="decision-card">
+      <div class="decision-meta">
+        <span class="log-date" style="margin:0;">${dateStr}</span>
+        <span class="confidence-tag">${d.confidence != null ? d.confidence + '% confident' : ''}</span>
+      </div>
+      <div class="log-field-val" style="color:var(--text);font-size:14px;">${esc(d.decision)}</div>
+      ${d.expectation ? '<div class="log-field-label">expected</div><div class="log-field-val">' + esc(d.expectation) + '</div>' : ''}
+      ${d.outcome
+        ? '<div class="outcome-block"><div class="log-field-label">outcome \u00b7 ' + (d.outcome_at ? new Date(d.outcome_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '') + '</div><div class="log-field-val">' + esc(d.outcome) + '</div></div>'
+        : `<button class="btn-tiny" onclick="toggleOutcome(${d.id})">Record outcome</button>
+           <div class="outcome-form" id="of-${d.id}">
+             <textarea id="ot-${d.id}" rows="2" placeholder="What actually happened?"></textarea>
+             <button class="btn-tiny" style="margin-top:0;" onclick="saveOutcome(${d.id})">Save outcome</button>
+           </div>`
+      }
+    </div>`;
+  }).join('');
+}
+
+function toggleOutcome(id) {
+  document.getElementById('of-' + id).classList.toggle('open');
+}
+
+async function saveOutcome(id) {
+  const text = document.getElementById('ot-' + id).value.trim();
+  if (!text) return;
+  try {
+    const res = await dbFetch('decisions?id=eq.' + id, {
+      method: 'PATCH', prefer: 'return=minimal',
+      body: JSON.stringify({ outcome: text, outcome_at: new Date().toISOString() })
+    });
+    if (res.ok || res.status === 204) renderDecisions();
+  } catch(e) {}
 }
 
 // --- HISTORY ---
+function sparkSVG(vals) {
+  const w = 120, h = 28, p = 3, min = 1, max = 10;
+  if (vals.length < 2) return '<svg width="' + w + '" height="' + h + '"></svg>';
+  const pts = vals.map((v, i) => [
+    p + i * (w - 2*p) / (vals.length - 1),
+    h - p - ((v - min) / (max - min)) * (h - 2*p)
+  ]);
+  const poly = pts.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+  const last = pts[pts.length - 1];
+  return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' +
+    '<polyline points="' + poly + '" fill="none" stroke="var(--text-2)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="2.2" fill="var(--text)"/></svg>';
+}
+
 async function renderHistory() {
+  const statsEl = document.getElementById('history-stats');
   const el = document.getElementById('history-list');
   el.innerHTML = '<div class="loading-state">loading...</div>';
-  const entries = await loadEntries();
+  statsEl.innerHTML = '';
+  const entries = await loadTable('entries?select=*&order=date.desc');
   if (!entries.length) {
     el.innerHTML = '<div class="empty-state">no entries yet</div>';
     return;
   }
+
+  // Stats strip: this week count + 14-day sparklines
+  const monday = mondayOf();
+  const weekCount = new Set(entries.filter(e => e.date >= monday).map(e => e.date)).size;
+  const recent = entries.slice(0, 14).reverse();
+  const sparks = [['energy','energy'],['mood','mood'],['focus','focus'],['social','social']].map(([k, label]) => {
+    const vals = recent.map(e => e[k]).filter(v => v != null);
+    const lastVal = vals.length ? vals[vals.length - 1] : '\u2013';
+    return '<div class="spark-cell"><div class="spark-head"><span class="spark-label">' + label + '</span><span class="spark-last">' + lastVal + '</span></div>' + sparkSVG(vals) + '</div>';
+  }).join('');
+  statsEl.innerHTML = '<div class="stats-strip"><div class="stats-week">this week: ' + weekCount + '/7 logged \u00b7 last 14 entries</div><div class="spark-grid">' + sparks + '</div></div>';
+
   el.innerHTML = entries.map(e => {
-    const d = new Date(e.created_at);
-    const dateStr = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
-    const outputs = (e.outputs||[]).map(o => `<span class="log-pill output">${o}</span>`).join('');
-    const pills = [e.location, e.mode].filter(Boolean).map(x => `<span class="log-pill">${x}</span>`).join('');
-    const fields = ['signal','friction','decision','consumption','note'].map(k =>
-      e[k] ? `<div class="log-field-label">${k}</div><div class="log-field-val">${e[k]}</div>` : ''
+    const d = new Date(e.date + 'T12:00:00');
+    const dateStr = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'});
+    const outputs = (e.outputs || []).map(o => '<span class="log-pill output">' + esc(o) + '</span>').join('');
+    const ctx = [e.location, e.mode].filter(Boolean).map(x => '<span class="log-pill">' + esc(x) + '</span>').join('');
+    const inputs = [
+      e.sleep_quality != null ? 'sleep ' + e.sleep_quality + '/5' : null,
+      e.alcohol && e.alcohol !== 'None' ? 'alcohol ' + e.alcohol : null,
+      e.caffeine_pm ? 'pm caffeine' : null,
+      e.outdoor && e.outdoor !== 'None' ? 'outdoors: ' + e.outdoor.toLowerCase() : null
+    ].filter(Boolean).map(x => '<span class="log-pill">' + esc(x) + '</span>').join('');
+    const adv = e.advanced_project ? '<span class="log-pill flag">advanced a key project</span>' : '';
+    const fields = ['signal','friction','decision','tomorrow','consumption','note'].map(k =>
+      e[k] ? '<div class="log-field-label">' + k + '</div><div class="log-field-val">' + esc(e[k]) + '</div>' : ''
     ).join('');
     return `
       <div class="log-entry">
         <div class="log-date">${dateStr}</div>
         <div class="log-scores">
-          <div class="log-score"><span class="log-score-label">energy</span><span class="log-score-val">${e.energy}</span></div>
-          <div class="log-score"><span class="log-score-label">mood</span><span class="log-score-val">${e.mood}</span></div>
-          <div class="log-score"><span class="log-score-label">focus</span><span class="log-score-val">${e.focus}</span></div>
-          <div class="log-score"><span class="log-score-label">social</span><span class="log-score-val">${e.social}</span></div>
+          <div class="log-score"><span class="log-score-label">energy</span><span class="log-score-val">${e.energy ?? '\u2013'}</span></div>
+          <div class="log-score"><span class="log-score-label">mood</span><span class="log-score-val">${e.mood ?? '\u2013'}</span></div>
+          <div class="log-score"><span class="log-score-label">focus</span><span class="log-score-val">${e.focus ?? '\u2013'}</span></div>
+          <div class="log-score"><span class="log-score-label">social</span><span class="log-score-val">${e.social ?? '\u2013'}</span></div>
         </div>
-        ${pills ? `<div class="log-pills">${pills}</div>` : ''}
-        ${outputs ? `<div class="log-pills">${outputs}</div>` : ''}
+        ${ctx ? '<div class="log-pills">' + ctx + '</div>' : ''}
+        ${inputs || adv ? '<div class="log-pills">' + inputs + adv + '</div>' : ''}
+        ${outputs ? '<div class="log-pills">' + outputs + '</div>' : ''}
         ${fields}
       </div>`;
   }).join('');
 }
 
 // --- EXPORT ---
+async function loadAll() {
+  const [entries, weekly, decisions] = await Promise.all([
+    loadTable('entries?select=*&order=date.asc'),
+    loadTable('weekly?order=week_of.asc'),
+    loadTable('decisions?order=created_at.asc')
+  ]);
+  return { exported_at: new Date().toISOString(), entries, weekly, decisions };
+}
+
 async function renderExport() {
   const pre = document.getElementById('export-pre');
   pre.textContent = 'loading...';
-  const entries = await loadEntries();
-  pre.textContent = entries.length ? JSON.stringify(entries, null, 2) : 'no entries yet';
+  const all = await loadAll();
+  pre.textContent = all.entries.length || all.weekly.length || all.decisions.length
+    ? JSON.stringify(all, null, 2) : 'no data yet';
 }
 
 async function downloadJSON() {
-  const entries = await loadEntries();
-  const blob = new Blob([JSON.stringify(entries, null, 2)], {type: 'application/json'});
+  const all = await loadAll();
+  const blob = new Blob([JSON.stringify(all, null, 2)], {type: 'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'daily-log-' + new Date().toISOString().split('T')[0] + '.json';
+  a.download = 'daily-log-' + localDate() + '.json';
   a.click();
 }
 
 async function copyJSON() {
-  const entries = await loadEntries();
-  await navigator.clipboard.writeText(JSON.stringify(entries, null, 2));
+  const all = await loadAll();
+  await navigator.clipboard.writeText(JSON.stringify(all, null, 2));
   const btn = document.getElementById('copy-btn');
-  btn.textContent = 'Copied ✓';
+  btn.textContent = 'Copied \u2713';
   setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
 }
 
 // --- BOOT ---
-setDate();
-buildPills('loc-pills', LOCATIONS, 'location');
-buildPills('mode-pills', MODES, 'mode');
-buildChecks();
-checkConnection();
+async function init() {
+  setDate();
+  document.getElementById('week-header').textContent = 'week of ' + mondayOf();
+  buildPills('sleep-pills', SLEEP, '_sleepLabel');
+  // sleep stores a number, so wire it manually:
+  document.querySelectorAll('#sleep-pills .pill').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#sleep-pills .pill').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      state.sleep = parseInt(btn.textContent, 10);
+      saveDraft();
+    };
+  });
+  buildPills('alc-pills', ALCOHOL, 'alcohol');
+  buildPills('caf-pills', YESNO, 'caffeine');
+  buildPills('out-pills', OUTDOOR, 'outdoor');
+  buildPills('adv-pills', YESNO, 'advanced');
+  buildPills('loc-pills', LOCATIONS, 'location');
+  buildPills('mode-pills', MODES, 'mode');
+  buildChecks();
+  TXT.forEach(k => document.getElementById('txt-' + k).addEventListener('input', saveDraft));
+
+  checkConnection();
+
+  const today = localDate();
+
+  // Load today's entry if it exists (edit mode), else restore any local draft
+  try {
+    const res = await dbFetch('entries?date=eq.' + today);
+    if (res.ok) {
+      const rows = await res.json();
+      if (rows.length) {
+        todayExists = true;
+        populateFromEntry(rows[0]);
+        document.getElementById('save-btn').textContent = 'Update entry';
+        clearDraft();
+      } else {
+        restoreDraft();
+      }
+    } else {
+      restoreDraft();
+    }
+  } catch(e) { restoreDraft(); }
+
+  // Carry over yesterday's "tomorrow's one thing"
+  try {
+    const res = await dbFetch('entries?select=date,tomorrow&date=lt.' + today + '&tomorrow=not.is.null&order=date.desc&limit=1');
+    if (res.ok) {
+      const rows = await res.json();
+      if (rows.length && rows[0].tomorrow) {
+        document.getElementById('banner-label').textContent = "Today's one thing \u00b7 set " + rows[0].date;
+        document.getElementById('banner-text').textContent = rows[0].tomorrow;
+        document.getElementById('banner').style.display = '';
+      }
+    }
+  } catch(e) {}
+}
+
+init();
 </script>
 </body>
 </html>
