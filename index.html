@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Log</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
@@ -30,6 +29,26 @@
     --sans: 'DM Sans', sans-serif;
     --radius: 10px;
     --radius-sm: 6px;
+    --on-accent: #ffffff;
+  }
+
+  /* Darkroom theme (auto after 20:00, manual via header toggle) */
+  html[data-theme="dark"] {
+    --bg: #100f0d;
+    --surface: #181613;
+    --surface2: #211e19;
+    --border: rgba(255,255,255,0.07);
+    --border-mid: rgba(255,255,255,0.15);
+    --text: #ece6d9;
+    --text-2: #9d9686;
+    --text-3: #645f55;
+    --accent: #d29a4a;
+    --accent-light: #2c2519;
+    --on-accent: #16110a;
+    --green: #8fbf9f;
+    --green-bg: rgba(45,106,79,0.22);
+    --red: #e2929f;
+    --red-bg: rgba(155,35,53,0.22);
   }
 
   body {
@@ -39,6 +58,8 @@
     min-height: 100vh;
     font-size: 15px;
     -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.4s ease, color 0.4s ease;
   }
 
   .app {
@@ -193,7 +214,7 @@
   .pill:hover { border-color: var(--text-3); }
   .pill.sel {
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     border-color: var(--accent);
   }
 
@@ -215,7 +236,7 @@
   .seg:hover { border-color: var(--text-3); }
   .seg.sel {
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     border-color: var(--accent);
   }
 
@@ -303,7 +324,7 @@
     font-family: var(--sans);
     font-weight: 400;
     background: var(--accent);
-    color: #fff;
+    color: var(--on-accent);
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -492,6 +513,69 @@
     letter-spacing: 0.04em;
     margin-bottom: 18px;
   }
+
+  /* Theme toggle */
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .theme-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    background: transparent;
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    padding: 4px 9px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .theme-btn:hover { color: var(--text-2); border-color: var(--text-3); }
+
+  /* Year strip */
+  .year-strip { margin-top: 12px; max-width: 280px; }
+  .year-strip svg { display: block; }
+  .year-caption {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-top: 4px;
+  }
+  .tick-today { animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+  /* Gauge baseline + ticks under score buttons */
+  .seg-row { position: relative; padding-bottom: 8px; }
+  .seg-row::after {
+    content: '';
+    position: absolute;
+    left: 2px; right: 2px; bottom: 0;
+    height: 1px;
+    background: var(--border);
+  }
+  .seg { position: relative; }
+  .seg::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -8px;
+    width: 1px; height: 4px;
+    background: var(--border-mid);
+  }
+
+  /* Save stamp */
+  @keyframes stamp { 0% { transform: scale(1); } 35% { transform: scale(0.94); } 100% { transform: scale(1); } }
+  .btn-primary.stamped { animation: stamp 0.28s ease-out; }
+
+  /* Daily glyph */
+  .log-entry { position: relative; }
+  .log-glyph { position: absolute; top: 10px; right: 10px; line-height: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tick-today { animation: none; }
+    .btn-primary.stamped { animation: none; }
+    body { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -501,8 +585,13 @@
     <div class="header-left">
       <h1>Daily Log</h1>
       <div class="date-str" id="date-str"></div>
+      <div class="year-strip" id="year-strip"></div>
+      <div class="year-caption" id="year-count"></div>
     </div>
-    <div class="status-dot" id="status-dot" title="Connection status"></div>
+    <div class="header-right">
+      <button class="theme-btn" id="theme-btn" onclick="cycleTheme()" title="Theme: auto / light / dark">auto</button>
+      <div class="status-dot" id="status-dot" title="Connection status"></div>
+    </div>
   </div>
 
   <div class="banner" id="banner" style="display:none;">
@@ -765,6 +854,31 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// --- THEME (darkroom after 20:00 on auto) ---
+const THEMES = ['auto','light','dark'];
+function appliedTheme(pref) {
+  if (pref !== 'auto') return pref;
+  const h = new Date().getHours();
+  return (h >= 20 || h < 6) ? 'dark' : 'light';
+}
+function applyTheme() {
+  const pref = localStorage.getItem('dl-theme') || 'auto';
+  document.documentElement.dataset.theme = appliedTheme(pref);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = pref;
+}
+function cycleTheme() {
+  const cur = localStorage.getItem('dl-theme') || 'auto';
+  const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
+  try { localStorage.setItem('dl-theme', next); } catch(e) {}
+  applyTheme();
+}
+
+// --- Haptic tap (mobile) ---
+function hap() {
+  try { if (navigator.vibrate) navigator.vibrate(8); } catch(e) {}
+}
+
 // --- SUPABASE ---
 async function dbFetch(path, opts = {}) {
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
@@ -829,6 +943,7 @@ function buildSegs(containerId, key) {
     btn.onclick = () => {
       state[key] = i;
       el.querySelectorAll('.seg').forEach(b => b.classList.toggle('sel', +b.textContent === i));
+      hap();
       saveDraft();
     };
     el.appendChild(btn);
@@ -863,6 +978,7 @@ function buildPills(containerId, items, stateKey) {
       el.querySelectorAll('.pill').forEach(b => b.classList.remove('sel'));
       btn.classList.add('sel');
       state[stateKey] = item;
+      hap();
       saveDraft();
     };
     el.appendChild(btn);
@@ -886,6 +1002,7 @@ function buildChecks() {
       btn.querySelector('.check-box').textContent = on ? '\u2713' : '';
       if (on) { if (!state.outputs.includes(item)) state.outputs.push(item); }
       else { state.outputs = state.outputs.filter(x => x !== item); }
+      hap();
       saveDraft();
     };
     grid.appendChild(btn);
@@ -914,6 +1031,7 @@ function buildExercise() {
         else state.exercise.push(item);
       }
       el.querySelectorAll('.pill').forEach(b => b.classList.toggle('sel', state.exercise.includes(b.textContent)));
+      hap();
       saveDraft();
     };
     el.appendChild(btn);
@@ -1042,6 +1160,7 @@ async function saveEntry() {
     }
     if (res.ok || res.status === 201 || res.status === 204) {
       todayExists = true;
+      btn.classList.remove('stamped'); void btn.offsetWidth; btn.classList.add('stamped');
       btn.textContent = 'Update entry';
       msg.className = 'save-msg ok';
       msg.textContent = todayExists ? 'saved \u2713 (you can edit and re-save)' : 'saved \u2713';
@@ -1225,6 +1344,67 @@ async function saveOutcome(id) {
 }
 
 // --- HISTORY ---
+// Daily glyph: 4 spokes = energy/mood/focus/social, core = sleep,
+// red ticks = substances, green ticks = exercise, amber dot = advanced a project
+function glyphSVG(e) {
+  const vals = [e.energy, e.mood, e.focus, e.social];
+  if (vals.some(v => v == null)) return '';
+  const S = 46, c = S / 2, rMax = 15;
+  const scaleMax = Math.max(...vals) > 7 ? 10 : 7;
+  const pts = vals.map((v, i) => {
+    const a = (-90 + i * 90) * Math.PI / 180;
+    const r = 3 + (v / scaleMax) * rMax;
+    return [(c + r * Math.cos(a)).toFixed(1), (c + r * Math.sin(a)).toFixed(1)];
+  });
+  const poly = pts.map(p => p.join(',')).join(' ');
+  let parts = '<circle cx="' + c + '" cy="' + c + '" r="' + (rMax + 3) + '" fill="none" stroke="var(--border-mid)" stroke-width="0.8"/>';
+  parts += '<polygon points="' + poly + '" fill="var(--text-2)" fill-opacity="0.08" stroke="var(--text-2)" stroke-width="1.2" stroke-linejoin="round"/>';
+  if (e.sleep_quality != null) {
+    parts += '<circle cx="' + c + '" cy="' + c + '" r="' + (0.8 + e.sleep_quality * 0.8).toFixed(1) + '" fill="var(--text)" fill-opacity="0.65"/>';
+  }
+  const tick = (deg, color) => {
+    const a = deg * Math.PI / 180, r1 = rMax + 4.5, r2 = rMax + 7.5;
+    parts += '<line x1="' + (c + r1 * Math.cos(a)).toFixed(1) + '" y1="' + (c + r1 * Math.sin(a)).toFixed(1) +
+      '" x2="' + (c + r2 * Math.cos(a)).toFixed(1) + '" y2="' + (c + r2 * Math.sin(a)).toFixed(1) +
+      '" stroke="' + color + '" stroke-width="1.3" stroke-linecap="round"/>';
+  };
+  if (e.alcohol && e.alcohol !== 'None') tick(150, 'var(--red)');
+  if (e.weed) tick(172, 'var(--red)');
+  if (e.nose && e.nose !== 'None') tick(194, 'var(--red)');
+  (e.exercise || []).filter(x => x !== 'None').forEach((x, i) => tick(28 + i * 17, 'var(--green)'));
+  if (e.advanced_project) {
+    parts += '<circle cx="' + c + '" cy="' + (c - rMax - 6) + '" r="1.6" fill="var(--accent)"/>';
+  }
+  return '<svg width="' + S + '" height="' + S + '" viewBox="0 0 ' + S + ' ' + S + '">' + parts + '</svg>';
+}
+
+// Year strip: one tick per day, taller where logged, today pulses
+async function renderYearStrip() {
+  try {
+    const res = await dbFetch('entries?select=date');
+    if (!res.ok) return;
+    const dates = new Set((await res.json()).map(r => r.date));
+    const year = new Date().getFullYear();
+    const days = (Date.UTC(year, 11, 31) - Date.UTC(year, 0, 1)) / 86400000 + 1;
+    const today = localDate();
+    const h = 12;
+    let ticks = '';
+    for (let i = 0; i < days; i++) {
+      const ds = localDate(new Date(year, 0, 1 + i));
+      const logged = dates.has(ds);
+      const isToday = ds === today;
+      const y1 = logged ? 0.5 : 4, y2 = logged ? h - 0.5 : h - 4;
+      const color = isToday ? 'var(--accent)' : (logged ? 'var(--text-2)' : 'var(--border-mid)');
+      ticks += '<line x1="' + (i + 0.5) + '" x2="' + (i + 0.5) + '" y1="' + y1 + '" y2="' + y2 +
+        '" stroke="' + color + '" stroke-width="' + (isToday ? 1.6 : 0.7) + '"' + (isToday ? ' class="tick-today"' : '') + '/>';
+    }
+    document.getElementById('year-strip').innerHTML =
+      '<svg width="100%" height="' + h + '" viewBox="0 0 ' + days + ' ' + h + '" preserveAspectRatio="none">' + ticks + '</svg>';
+    document.getElementById('year-count').textContent =
+      dates.size + (dates.size === 1 ? ' day' : ' days') + ' logged \u00b7 ' + year;
+  } catch(e) {}
+}
+
 function sparkSVG(vals) {
   const w = 120, h = 28, p = 3, min = 1;
   const max = Math.max(7, ...vals);
@@ -1282,6 +1462,7 @@ async function renderHistory() {
     ).join('');
     return `
       <div class="log-entry">
+        <div class="log-glyph">${glyphSVG(e)}</div>
         <div class="log-date">${dateStr}</div>
         <div class="log-scores">
           <div class="log-score"><span class="log-score-label">energy</span><span class="log-score-val">${e.energy ?? '\u2013'}</span></div>
@@ -1334,6 +1515,8 @@ async function copyJSON() {
 
 // --- BOOT ---
 async function init() {
+  applyTheme();
+  setInterval(applyTheme, 10 * 60 * 1000); // re-evaluate auto theme as evening arrives
   setDate();
   document.getElementById('week-header').textContent = 'week of ' + mondayOf();
   buildPills('sleep-pills', SLEEP, '_sleepLabel');
@@ -1343,6 +1526,7 @@ async function init() {
       document.querySelectorAll('#sleep-pills .pill').forEach(b => b.classList.remove('sel'));
       btn.classList.add('sel');
       state.sleep = parseInt(btn.textContent, 10);
+      hap();
       saveDraft();
     };
   });
@@ -1367,6 +1551,7 @@ async function init() {
   TXT.forEach(k => document.getElementById('txt-' + k).addEventListener('input', saveDraft));
 
   checkConnection();
+  renderYearStrip();
 
   const today = localDate();
 
