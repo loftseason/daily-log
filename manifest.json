@@ -1,0 +1,11 @@
+{
+  "name": "Daily Log",
+  "short_name": "Daily Log",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#100f0d",
+  "theme_color": "#f7f6f3",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
